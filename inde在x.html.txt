@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>重庆卡航智融汽车贷款计算器</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> 
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+        body { background-color: #f5f7fa; color: #333; line-height: 1.6; padding: 15px; max-width: 500px; margin: 0 auto; }
+        .calculator-container { background-color: white; border-radius: 16px; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08); overflow: hidden; margin-bottom: 20px; }
+        .header { background: linear-gradient(135deg, #1a6dff 0%, #0d4dc2 100%); color: white; padding: 20px 24px; text-align: center; border-radius: 16px 16px 0 0; }
+        .header h1 { font-size: 22px; font-weight: 600; margin-bottom: 8px; }
+        .header p { opacity: 0.9; font-size: 14px; }
+        .input-section { padding: 20px 24px; }
+        .input-group { margin-bottom: 20px; }
+        .input-group label { display: block; font-weight: 600; margin-bottom: 8px; color: #444; font-size: 15px; }
+        .input-wrapper { position: relative; }
+        .input-wrapper i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #1a6dff; font-size: 18px; }
+        input, select { width: 100%; padding: 14px 14px 14px 46px; border: 1px solid #ddd; border-radius: 10px; font-size: 16px; background-color: #f9fafc; transition: all 0.3s; }
+        input:focus, select:focus { outline: none; border-color: #1a6dff; box-shadow: 0 0 0 3px rgba(26, 109, 255, 0.15); }
+        .radio-group { display: flex; gap: 10px; margin-top: 8px; }
+        .radio-option { flex: 1; text-align: center; }
+        .radio-option input { display: none; }
+        .radio-option label { display: block; padding: 10px; background-color: #f1f5f9; border-radius: 8px; font-size: 14px; cursor: pointer; transition: all 0.3s; }
+        .radio-option input:checked + label { background-color: #1a6dff; color: white; font-weight: 600; }
+        .button-group { display: flex; gap: 12px; margin-top: 30px; }
+        button { flex: 1; padding: 16px; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+        .calculate-btn { background: linear-gradient(135deg, #1a6dff 0%, #0d4dc2 100%); color: white; }
+        .reset-btn { background-color: #f1f5f9; color: #64748b; }
+        button:hover { transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1); }
+        .result-section { padding: 20px 24px; background-color: #f9fafc; border-top: 1px solid #eee; }
+        .result-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+        .result-item { background-color: white; border-radius: 12px; padding: 16px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.04); border: 1px solid #f0f0f0; }
+        .result-item h3 { font-size: 13px; color: #64748b; margin-bottom: 8px; font-weight: 600; }
+        .result-value { font-size: 20px; font-weight: 700; color: #1a6dff; }
+        .result-value.small { font-size: 16px; }
+        .repayment-plan { margin-top: 24px; }
+        .repayment-plan h2 { font-size: 18px; color: #333; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 2px solid #f0f0f0; }
+        .plan-table { width: 100%; border-collapse: collapse; background-color: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.04); }
+        .plan-table th { background-color: #f8fafc; padding: 14px 12px; text-align: center; font-size: 13px; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0; }
+        .plan-table td { padding: 12px; text-align: center; font-size: 13px; border-bottom: 1px solid #f1f5f9; }
+        .plan-table tr:last-child td { border-bottom: none; }
+        .month-cell { font-weight: 600; color: #1a6dff; }
+        .plan-container { max-height: 300px; overflow-y: auto; margin-top: 12px; border-radius: 12px; }
+        .footer { text-align: center; margin-top: 20px; color: #94a3b8; font-size: 12px; padding: 15px; }
+        @media (max-width: 400px) { .result-grid { grid-template-columns: 1fr; } .header h1 { font-size: 20px; } .input-section, .result-section { padding: 16px; } }
+        .precision-note { font-size: 12px; color: #666; margin-top: 5px; padding-left: 46px; }
+        .example-box { background-color: #f8fafc; border-left: 4px solid #1a6dff; padding: 10px 15px; margin-top: 10px; border-radius: 8px; font-size: 13px; }
+        .example-title { font-weight: 600; color: #1a6dff; margin-bottom: 5px; }
+        .calculation-detail { background-color: #f8fafc; border: 1px dashed #ddd; border-radius: 8px; padding: 12px; margin-top: 15px; font-size: 13px; }
+        .detail-title { font-weight: 600; color: #1a6dff; margin-bottom: 8px; }
+        .detail-row { display: flex; justify-content: space-between; margin-bottom: 5px; }
+        .detail-label { color: #666; }
+        .detail-value { font-weight: 600; color: #333; }
+    </style>
+</head>
+<body>
+    <div class="calculator-container">
+        <div class="header">
+            <h1><i class="fas fa-car"></i> 重庆卡航智融汽车贷款计算器</h1>
+            <p>重庆卡航智融专用 | 精准计算汽车贷款</p>
+        </div>
+        
+        <div class="input-section">
+            <div class="input-group">
+                <label for="loanAmount"><i class="fas fa-money-bill-wave"></i> 贷款金额（元）</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-yen-sign"></i>
+                    <input type="number" id="loanAmount" placeholder="请输入贷款金额" value="100000" min="1000" step="1000">
+                </div>
+            </div>
+            
+            <div class="input-group">
+                <label for="depositRatio"><i class="fas fa-percentage"></i> 保证金比例</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-hand-holding-usd"></i>
+                    <select id="depositRatio">
+                        <option value="0.8">0.8 (80%)</option>
+                        <option value="0.85">0.85 (85%)</option>
+                        <option value="0.9" selected>0.9 (90%)</option>
+                        <option value="0.95">0.95 (95%)</option>
+                        <option value="1">1 (100%)</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="input-group">
+                <label for="loanTerm"><i class="fas fa-calendar-alt"></i> 期限（月）</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-clock"></i>
+                    <input type="number" id="loanTerm" placeholder="请输入贷款期限" value="24" min="1" max="120" step="1">
+                </div>
+            </div>
+            
+            <div class="input-group">
+                <label for="annualRate"><i class="fas fa-chart-line"></i> 年利率（%）</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-percent"></i>
+                    <input type="number" id="annualRate" placeholder="请输入年利率" value="23.8" min="0.1" max="100" step="0.1">
+                </div>
+            </div>
+            
+            <div class="input-group">
+                <label><i class="fas fa-ruler-combined"></i> 精确位选项</label>
+                <div class="radio-group">
+                    <div class="radio-option">
+                        <input type="radio" id="precision1" name="precision" value="100" checked>
+                        <label for="precision1">个十位小数归零</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="precision2" name="precision" value="1000">
+                        <label for="precision2">个十百位小数归零</label>
+                    </div>
+                </div>
+                <div class="precision-note">注：精确位选项会将对应位数直接归零，而不是四舍五入</div>
+                <div class="example-box">
+                    <div class="example-title">示例说明：</div>
+                    <div>贷款金额100,000 ÷ 保证金比例0.9 = 111,111.11111</div>
+                    <div>个十百位小数归零后：111,000.00元</div>
+                </div>
+            </div>
+            
+            <div class="button-group">
+                <button class="calculate-btn" id="calculateBtn">
+                    <i class="fas fa-calculator"></i> 计算 
+                </button>
+                <button class="reset-btn" id="resetBtn">
+                    <i class="fas fa-redo"></i> 重置 
+                </button>
+            </div>
+        </div>
+        
+        <div class="result-section">
+            <div class="result-grid">
+                <div class="result-item">
+                    <h3>融资金额（元）</h3>
+                    <div class="result-value" id="financingAmount">0.00</div>
+                </div>
+                <div class="result-item">
+                    <h3>月还金额（元）</h3>
+                    <div class="result-value" id="monthlyPayment">0.00</div>
+                </div>
+                <div class="result-item">
+                    <h3>保证金（元）</h3>
+                    <div class="result-value" id="deposit">0.00</div>
+                </div>
+                <div class="result-item">
+                    <h3>实际放款额（元）</h3>
+                    <div class="result-value" id="actualLoan">0.00</div>
+                </div>
+                <div class="result-item">
+                    <h3>月息（厘）</h3>
+                    <div class="result-value small" id="monthlyRate">0厘</div>
+                </div>
+                <div class="result-item">
+                    <h3>总利息（元）</h3>
+                    <div class="result-value" id="totalInterest">0.00</div>
+                </div>
+                <div class="result-item">
+                    <h3>总还款额（元）</h3>
+                    <div class="result-value" id="totalRepayment">0.00</div>
+                </div>
+            </div>
+            
+            <div class="calculation-detail" id="calcDetail">
+                <div class="detail-title">计算明细：</div>
+                <div class="detail-row">
+                    <span class="detail-label">贷款金额 ÷ 保证金比例：</span>
+                    <span class="detail-value" id="detailRawFinancing">0.00</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">精确归零后融资金额：</span>
+                    <span class="detail-value" id="detailFinalFinancing">0.00</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">保证金：</span>
+                    <span class="detail-value" id="detailDepositCalc">0.00</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">实际放款额：</span>
+                    <span class="detail-value" id="detailActualLoanCalc">0.00</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">月息计算（总利息÷融资金额÷期限×1000）：</span>
+                    <span class="detail-value" id="detailMonthlyRateCalc">0.00</span>
+                </div>
+            </div>
+            
+            <div class="repayment-plan">
+                <h2><i class="fas fa-table"></i> 还款计划表（等额本息）</h2>
+                <div class="plan-container">
+                    <table class="plan-table" id="repaymentTable">
+                        <thead>
+                            <tr>
+                                <th>期数</th>
+                                <th>月供（元）</th>
+                                <th>本金（元）</th>
+                                <th>利息（元）</th>
+                                <th>剩余本金（元）</th>
+                            </tr>
+                        </thead>
+                        <tbody id="repaymentBody">
+                            <!-- 还款计划数据将通过JavaScript动态生成 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>© 2023 汽车贷款计算器 | 重庆卡航智融专用版本</p>
+    </div>
+ 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const loanAmountInput = document.getElementById('loanAmount');
+            const depositRatioSelect = document.getElementById('depositRatio');
+            const loanTermInput = document.getElementById('loanTerm');
+            const annualRateInput = document.getElementById('annualRate');
+            const precisionRadios = document.querySelectorAll('input[name="precision"]');
+            const calculateBtn = document.getElementById('calculateBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            
+            const financingAmountEl = document.getElementById('financingAmount');
+            const monthlyPaymentEl = document.getElementById('monthlyPayment');
+            const depositEl = document.getElementById('deposit');
+            const actualLoanEl = document.getElementById('actualLoan');
+            const monthlyRateEl = document.getElementById('monthlyRate');
+            const totalInterestEl = document.getElementById('totalInterest');
+            const totalRepaymentEl = document.getElementById('totalRepayment');
+            const repaymentBody = document.getElementById('repaymentBody');
+            
+            const detailRawFinancing = document.getElementById('detailRawFinancing');
+            const detailFinalFinancing = document.getElementById('detailFinalFinancing');
+            const detailDepositCalc = document.getElementById('detailDepositCalc');
+            const detailActualLoanCalc = document.getElementById('detailActualLoanCalc');
+            const detailMonthlyRateCalc = document.getElementById('detailMonthlyRateCalc');
+            
+            calculateBtn.addEventListener('click', calculateLoan);
+            
+            resetBtn.addEventListener('click', function() {
+                loanAmountInput.value = 100000;
+                depositRatioSelect.value = 0.9;
+                loanTermInput.value = 24;
+                annualRateInput.value = 23.8;
+                document.getElementById('precision1').checked = true;
+                
+                financingAmountEl.textContent = '0.00';
+                monthlyPaymentEl.textContent = '0.00';
+                depositEl.textContent = '0.00';
+                actualLoanEl.textContent = '0.00';
+                monthlyRateEl.textContent = '0厘';
+                totalInterestEl.textContent = '0.00';
+                totalRepaymentEl.textContent = '0.00';
+                
+                detailRawFinancing.textContent = '0.00';
+                detailFinalFinancing.textContent = '0.00';
+                detailDepositCalc.textContent = '0.00';
+                detailActualLoanCalc.textContent = '0.00';
+                detailMonthlyRateCalc.textContent = '0.00';
+                
+                repaymentBody.innerHTML = '';
+            });
+            
+            loanAmountInput.addEventListener('input', calculateLoan);
+            depositRatioSelect.addEventListener('change', calculateLoan);
+            loanTermInput.addEventListener('input', calculateLoan);
+            annualRateInput.addEventListener('input', calculateLoan);
+            precisionRadios.forEach(radio => {
+                radio.addEventListener('change', calculateLoan);
+            });
+            
+            calculateLoan();
+            
+            function calculateLoan() {
+                const loanAmount = parseFloat(loanAmountInput.value) || 0;
+                const depositRatio = parseFloat(depositRatioSelect.value) || 1;
+                const loanTerm = parseInt(loanTermInput.value) || 0;
+                const annualRate = parseFloat(annualRateInput.value) || 0;
+                
+                let precisionValue = 100;
+                precisionRadios.forEach(radio => {
+                    if (radio.checked) {
+                        precisionValue = parseInt(radio.value);
+                    }
+                });
+                
+                if (loanAmount <= 0 || loanTerm <= 0 || annualRate <= 0 || depositRatio <= 0) {
+                    alert('请输入有效的贷款参数');
+                    return;
+                }
+                
+                const rawFinancingAmount = loanAmount / depositRatio;
+                
+                let financingAmount = Math.floor(rawFinancingAmount / precisionValue) * precisionValue;
+                financingAmount = Math.round(financingAmount * 100) / 100;
+                
+                const deposit = financingAmount - loanAmount;
+                const actualLoan = financingAmount - deposit;
+                
+                const monthlyRateDecimal = annualRate / 100 / 12;
+                let monthlyPayment = 0;
+                if (monthlyRateDecimal > 0) {
+                    monthlyPayment = financingAmount * monthlyRateDecimal * Math.pow(1 + monthlyRateDecimal, loanTerm) / 
+                                    (Math.pow(1 + monthlyRateDecimal, loanTerm) - 1);
+                } else {
+                    monthlyPayment = financingAmount / loanTerm;
+                }
+                
+                const totalInterest = monthlyPayment * loanTerm - financingAmount;
+                const totalRepayment = monthlyPayment * loanTerm;
+                
+                const avgMonthlyRate = (totalInterest / financingAmount / loanTerm) * 1000;
+                const monthlyRateInLi = formatMonthlyRate(avgMonthlyRate);
+                
+                financingAmountEl.textContent = formatCurrency(financingAmount);
+                monthlyPaymentEl.textContent = formatCurrency(monthlyPayment);
+                depositEl.textContent = formatCurrency(deposit);
+                actualLoanEl.textContent = formatCurrency(actualLoan);
+                monthlyRateEl.textContent = monthlyRateInLi;
+                totalInterestEl.textContent = formatCurrency(totalInterest);
+                totalRepaymentEl.textContent = formatCurrency(totalRepayment);
+                
+                detailRawFinancing.textContent = formatCurrency(rawFinancingAmount);
+                detailFinalFinancing.textContent = formatCurrency(financingAmount);
+                detailDepositCalc.textContent = formatCurrency(deposit);
+                detailActualLoanCalc.textContent = formatCurrency(actualLoan);
+                detailMonthlyRateCalc.textContent = avgMonthlyRate.toFixed(2) + "厘";
+                
+                generateRepaymentPlan(financingAmount, monthlyRateDecimal, loanTerm, monthlyPayment);
+            }
+            
+            function generateRepaymentPlan(principal, monthlyRate, loanTerm, monthlyPayment) {
+                repaymentBody.innerHTML = '';
+                
+                let remainingPrincipal = principal;
+                
+                for (let month = 1; month <= loanTerm; month++) {
+                    const interest = remainingPrincipal * monthlyRate;
+                    const principalPaid = monthlyPayment - interest;
+                    remainingPrincipal -= principalPaid;
+                    
+                    if (month === loanTerm) {
+                        remainingPrincipal = 0;
+                    }
+                    
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="month-cell">第${month}期</td>
+                        <td>${formatCurrency(monthlyPayment)}</td>
+                        <td>${formatCurrency(principalPaid)}</td>
+                        <td>${formatCurrency(interest)}</td>
+                        <td>${formatCurrency(Math.max(remainingPrincipal, 0))}</td>
+                    `;
+                    repaymentBody.appendChild(row);
+                }
+            }
+            
+            function formatMonthlyRate(monthlyRateInLi) {
+                if (monthlyRateInLi <= 0) {
+                    return "0厘";
+                }
+                
+                const fen = Math.floor(monthlyRateInLi / 10);
+                const li = Math.round((monthlyRateInLi - fen * 10) * 10) / 10;
+                
+                if (fen === 0 && li === 0) {
+                    return "0厘";
+                } else if (fen === 0) {
+                    return li + "厘";
+                } else if (Math.abs(li) < 0.05) {
+                    return fen + "分";
+                } else {
+                    return fen + "分" + li + "厘";
+                }
+            }
+            
+            function formatCurrency(value) {
+                const roundedValue = Math.round(value * 100) / 100;
+                return roundedValue.toLocaleString('zh-CN', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2 
+                });
+            }
+        });
+    </script>
+</body>
+</html>
