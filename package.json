@@ -1,8 +1,0 @@
-// 路径：仓库根目录/package.json 
-{
-  "name": "car-loan-calculator",
-  "version": "1.0.0",
-  "scripts": {
-    "build": "echo '跳过构建' && exit 0"
-  }
-}
