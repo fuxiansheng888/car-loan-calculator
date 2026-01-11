@@ -1,0 +1,15 @@
+// 路径：仓库根目录/_routes.json 
+{
+  "version": 1,
+  "include": ["/*"],
+  "exclude": ["/*.css", "/*.js", "/*.png", "/assets/*"],
+  "rules": [
+    {
+      "pattern": "/*",
+      "handlers": [
+        "rewrite", 
+        "/index.html?path=:path"
+      ]
+    }
+  ]
+}
